@@ -7,33 +7,95 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
+    // ================= API (JSON) =================
     public function index()
     {
         $productos = Producto::all();
-        return view('productos.index', compact('productos'));
-    }
-
-    public function create()
-    {
-        return view('productos.create');
+        return response()->json($productos);
     }
 
     public function store(Request $request)
     {
-        Producto::create($request->all());
-        return redirect()->route('productos.index');
+        $producto = Producto::create($request->all());
+        return response()->json($producto, 201);
     }
 
-    public function edit($codigo)
+    public function show($codigo)
     {
         $producto = Producto::findOrFail($codigo);
-        return view('productos.edit', compact('producto'));
+        return response()->json($producto);
     }
 
     public function update(Request $request, $codigo)
     {
         $producto = Producto::findOrFail($codigo);
         $producto->update($request->all());
-        return redirect()->route('productos.index');
+        return response()->json($producto);
     }
+
+    public function destroy($codigo)
+    {
+        $producto = Producto::findOrFail($codigo);
+        $producto->delete();
+        return response()->json(null, 204);
+    }
+
+
+    // ================= VISTAS (Blade) =================
+    public function vistaIndex()
+    {
+        $productos = Producto::all();
+        return view('trabajo.productos.index', compact('productos'));
+    }
+
+    public function create()
+    {
+        return view('trabajo.productos.create');
+    }
+
+    public function storeWeb(Request $request)
+    {
+        $request->validate([
+        'codigo' => 'required|unique:productos,codigo',
+        'nombre' => 'required|string|max:255',
+        'precio' => 'required|numeric|min:0',
+        'cantidad' => 'required|integer|min:0',
+    ]);
+
+    // Crear producto
+    Producto::create($request->all());
+
+    return redirect()->route('productos.vistaIndex')
+        ->with('success', '✅ Producto creado correctamente.');
+    }
+
+    public function edit($codigo)
+    {
+        $producto = Producto::findOrFail($codigo);
+        return view('trabajo.productos.edit', compact('producto'));
+    }
+
+    public function updateWeb(Request $request, $codigo)
+    {
+        $producto = Producto::findOrFail($codigo);
+        $producto->update($request->all());
+        return redirect()->route('productos.vistaIndex')
+            ->with('success', 'Producto actualizado correctamente');
+    }
+
+   public function destroyWeb($codigo)
+{
+    $producto = Producto::findOrFail($codigo);
+
+    if ($producto->ventas()->count() > 0) {
+        return redirect()->route('productos.vistaIndex')
+            ->with('error', '❌ No se puede eliminar este producto porque ya tiene ventas registradas.');
+    }
+
+    $producto->delete();
+
+    return redirect()->route('productos.vistaIndex')
+        ->with('success', 'Producto eliminado correctamente');
+}
+
 }

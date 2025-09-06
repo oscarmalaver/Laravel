@@ -13,8 +13,11 @@ class Producto extends Model
 
     protected $fillable = ['codigo', 'nombre', 'descripcion', 'cantidad', 'precio'];
 
+    public $timestamps = false;  // 👈 evita que Laravel espere created_at y updated_at
+
     public function ventas()
     {
         return $this->hasMany(Venta::class, 'producto_id', 'codigo');
     }
 }
+
