@@ -78,7 +78,7 @@
             <td>{{ $v->cantidad_vendida }}</td>
             <td>${{ number_format($v->precio_unitario, 2) }}</td>
             <td>${{ number_format($v->total, 2) }}</td>
-            <td>{{ $v->fecha }}</td>
+<td>{{ \Carbon\Carbon::parse($v->fecha)->format('d/m/Y H:i:s') }}</td>
         </tr>
         @endforeach
     </table>

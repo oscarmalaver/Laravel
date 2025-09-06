@@ -53,13 +53,19 @@ class ProductoController extends Controller
         return view('trabajo.productos.create');
     }
 
-    public function storeWeb(Request $request)
-    {
-        $request->validate([
+   public function storeWeb(Request $request)
+{
+    $request->validate([
         'codigo' => 'required|unique:productos,codigo',
         'nombre' => 'required|string|max:255',
         'precio' => 'required|numeric|min:0',
         'cantidad' => 'required|integer|min:0',
+    ], [
+        'codigo.unique' => '❌ Error: El código ya existe. Por favor ingrese otro.',
+        'codigo.required' => '❌ El código es obligatorio.',
+        'nombre.required' => '❌ El nombre es obligatorio.',
+        'precio.required' => '❌ El precio es obligatorio.',
+        'cantidad.required' => '❌ La cantidad es obligatoria.',
     ]);
 
     // Crear producto
@@ -67,7 +73,8 @@ class ProductoController extends Controller
 
     return redirect()->route('productos.vistaIndex')
         ->with('success', '✅ Producto creado correctamente.');
-    }
+}
+
 
     public function edit($codigo)
     {
@@ -87,15 +94,16 @@ class ProductoController extends Controller
 {
     $producto = Producto::findOrFail($codigo);
 
-    if ($producto->ventas()->count() > 0) {
-        return redirect()->route('productos.vistaIndex')
-            ->with('error', '❌ No se puede eliminar este producto porque ya tiene ventas registradas.');
-    }
-
-    $producto->delete();
-
+   if ($producto->ventas()->count() > 0) {
     return redirect()->route('productos.vistaIndex')
-        ->with('success', 'Producto eliminado correctamente');
+        ->with('error', '❌ No se puede eliminar este producto porque ya tiene ventas registradas.');
+}
+
+$producto->delete();
+
+return redirect()->route('productos.vistaIndex')
+    ->with('success', 'Producto eliminado correctamente');
+
 }
 
 }

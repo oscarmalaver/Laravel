@@ -81,11 +81,12 @@
     <form method="POST" action="{{ route('ventas.storeWeb') }}" >
         @csrf
 <h2 style="text-align: center;">Registrar Venta</h2>
-@if ($errors->has('stock'))
+@if(session('error'))
     <div style="color:red; text-align:center; margin-bottom:10px;">
-        {{ $errors->first('stock') }}
+        {{ session('error') }}
     </div>
 @endif
+
 
         <label>Producto:</label>
         <select name="producto_id">

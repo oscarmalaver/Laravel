@@ -102,6 +102,17 @@
         <h1>Lista de Productos</h1>
         <a href="{{ route('productos.create') }}" class="button-new">Nuevo Producto</a>
     </header>
+@if(session('success'))
+    <div style="color:green; text-align:center; margin-bottom:15px;">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div style="color:red; text-align:center; margin-bottom:15px;">
+        {{ session('error') }}
+    </div>
+@endif
 
     <table>
         <thead>
@@ -122,8 +133,8 @@
                 <td>{{ $producto->cantidad }}</td>
                 <td class="actions">
                     <a href="{{ route('productos.edit', $producto) }}" class="button-edit">Editar</a>
-                    <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-delete">
-                        <onsubmit="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
+                    <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="form-delete"
+                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
 
                         @csrf @method('DELETE')
                         <button type="submit" class="button-delete">Eliminar</button>
